@@ -37,7 +37,7 @@ public class BankQueuee {
     }
     
     public void simulate(Scanner anEvent){
-        while(anEvent.hasNextLine()){
+        //while(anEvent.hasNextLine()){
             //Event newEvent = new Event(anEvent.nextLine());
             insertEvent(new Event(anEvent.nextLine()));
             currentTime += eventList[0].getArrivalTime();
@@ -48,9 +48,10 @@ public class BankQueuee {
                     processArrival(newEvent, anEvent, eventList, bankQueue);
                 else
                     processDeparture(newEvent, eventList, bankQueue);
+                currentTime += newEvent.getArrivalTime();
             }
         }
-    }
+    //}
 
     public void processArrival(Event newEvent, Scanner anEvent, Event[] eventList, Queue<Integer> bankQueue) {
         boolean atFront = bankQueue.isEmpty();
