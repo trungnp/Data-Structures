@@ -14,7 +14,7 @@ import java.util.*;
  * @author trungnp
  */
 public class BankQueuee {
-    private Queue<Integer> bankQueue;
+    private Queue<Event> bankQueue;
     private Event[] eventList;
     private int currentTime = 0;
     
@@ -36,72 +36,89 @@ public class BankQueuee {
         return null;
     }
     
-    public void simulate(Scanner anEvent){
-        while(anEvent.hasNextLine()){
+    public void simulate(Scanner arrivalFile){
+        while(arrivalFile.hasNextLine()){
             //Event newEvent = new Event(anEvent.nextLine());
-            insertEvent(new Event(anEvent.nextLine()));
-            currentTime += eventList[0].getArrivalTime();
+            //Event anEvent = new Event(arrivalFile.nextLine());
+            insertEvent(new Event(arrivalFile.nextLine()));
+            currentTime = eventList[0].getArrivalTime();
             
-            while(eventList.length != 0){
-                Event newEvent = eventList[0];
-                if(!newEvent.isDepart())
-                    processArrival(newEvent, anEvent, eventList, bankQueue);
+            while(!isEmpty()){
+                Event newEvent;
+                if(eventList[0] == null)
+                    newEvent = eventList[1];
                 else
-                    processDeparture(newEvent, eventList, bankQueue);
+                    newEvent = eventList[0];
+                if(!newEvent.isDepart())
+                    currentTime = newEvent.getArrivalTime();
+                if(!newEvent.isDepart())
+                    processArrival(newEvent, arrivalFile, eventList, bankQueue);
+                else
+                    processDeparture(newEvent, arrivalFile, eventList, bankQueue);
             }
         }
     }
 
-    public void processArrival(Event newEvent, Scanner anEvent, Event[] eventList, Queue<Integer> bankQueue) {
+    public void processArrival(Event newEvent, Scanner arrivalFile, Event[] eventList, Queue<Event> bankQueue) {
         boolean atFront = bankQueue.isEmpty();
-        bankQueue.add(newEvent.getArrivalTime());
+        bankQueue.add(newEvent);
         eventList[0] = null;
         
         if(atFront){
             insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
         }
         
-        if(anEvent.hasNextLine())
-            insertEvent(new Event(anEvent.nextLine()));
+        if(arrivalFile.hasNextLine())
+            insertEvent(new Event(arrivalFile.nextLine()));
     }
 
-    public void processDeparture(Event newEvent, Event[] eventList, Queue<Integer> bankQueue) {
+    public void processDeparture(Event newEvent, Scanner arrivalFile, Event[] eventList, Queue<Event> bankQueue) {
         bankQueue.remove();
         
         eventList[0] = null;
-        if(!bankQueue.isEmpty())
-            insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
+        if(!bankQueue.isEmpty()){
+            currentTime += bankQueue.peek().getTransactionTime();
+            //insertEvent(new Event(currentTime + bankQueue.peek().getTransactionTime()));
+            insertEvent(new Event(currentTime));
+        } else {
+            if(arrivalFile.hasNextLine())
+                insertEvent(new Event(arrivalFile.nextLine()));
+        }
+    }
+    
+    public boolean isEmpty(){
+        return (eventList[0] == null && eventList[1] == null);
     }
     
     public void insertEvent(Event anEvent){
-        if(eventList.length == 0 || eventList[0] == null)
+        if(eventList[0] == null)
             eventList[0] = anEvent;
-        else {
+        else if(eventList[1] == null){
             eventList[1] = anEvent;
-            Arrays.sort(eventList);
-//            if(eventList[0].isDepart()){
-//                if(eventList[0].getDepartureTime() >= anEvent.getArrivalTime()){
-//                    Event tmp = eventList[0];
-//                    eventList[1] = eventList[0];
-//                    eventList[0] = anEvent;
-//                } else {
-//                    eventList[1] = anEvent;
-//                }
-//            } else {
-//                if(eventList[0].getArrivalTime() >= anEvent.getArrivalTime()){
-//                    Event tmp = eventList[0];
-//                    eventList[1] = eventList[0];
-//                    eventList[0] = anEvent;
-//                } else {
-//                    eventList[1] = anEvent;
-//                }
-//            }
+            //Arrays.sort(eventList);
         }
+        if(eventList[0] != null && eventList[1] != null){
+            if(eventList[0].isDepart()){
+                if(eventList[0].getDepartureTime() >= eventList[1].getArrivalTime())
+                    swapEvent(0, 1);
+            } else if(eventList[1].isDepart()){
+                if(eventList[0].getArrivalTime() > eventList[1].getDepartureTime())
+                    swapEvent(0, 1);
+            } else {
+                Arrays.sort(eventList);
+            }
+        }
+    }
+    
+    public void swapEvent(int a, int b){
+        Event tmp = eventList[0];
+        eventList[0] = eventList[1];
+        eventList[1] = tmp;
     }
     
     public static void main(String[] args){
         BankQueuee bankQueuee = new BankQueuee();
-        Scanner s = bankQueuee.readEventFile("/Users/trungnp/NetBeansProjects/Data Structures/src/data/structures/arrivalEvents");
+        Scanner s = bankQueuee.readEventFile("/Users/trungnp/NetBeansProjects/Data-Structures/src/data/structures/arrivalEvents");
         bankQueuee.simulate(s);
     }
     
@@ -145,9 +162,7 @@ class Event implements Comparable{
     @Override
     public int compareTo(Object obj) {
         Event otherEvent = (Event)obj;
-        if(this.isDepart)
-            return this.getDepartureTime() >= otherEvent.getArrivalTime() ? -1 : 0;
-        else
-            return this.getArrivalTime()>= otherEvent.getArrivalTime() ? -1 : 0;
+        
+        return (this.getArrivalTime() - otherEvent.getArrivalTime());
     }
 }
