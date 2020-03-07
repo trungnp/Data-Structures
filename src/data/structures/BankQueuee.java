@@ -14,9 +14,10 @@ import java.util.*;
  * @author trungnp
  */
 public class BankQueuee {
-    private Queue<Integer> bankQueue;
+    private Queue<Event> bankQueue;
     private Event[] eventList;
     private int currentTime = 0;
+    private int people = 0;
     
     public BankQueuee(){
         bankQueue = new LinkedList<>();
@@ -28,7 +29,6 @@ public class BankQueuee {
         
         try {
             Scanner anEvent = new Scanner(eventFile);
-            
             return anEvent;
         } catch (FileNotFoundException ex) { 
             System.out.println("File not found.");
@@ -36,69 +36,90 @@ public class BankQueuee {
         return null;
     }
     
-    public void simulate(Scanner anEvent){
-        //while(anEvent.hasNextLine()){
-            //Event newEvent = new Event(anEvent.nextLine());
-            insertEvent(new Event(anEvent.nextLine()));
-            currentTime += eventList[0].getArrivalTime();
-            
-            while(eventList.length != 0){
-                Event newEvent = eventList[0];
-                if(!newEvent.isDepart())
-                    processArrival(newEvent, anEvent, eventList, bankQueue);
-                else
-                    processDeparture(newEvent, eventList, bankQueue);
-                currentTime += newEvent.getArrivalTime();
+    public void simulate(Scanner arrivalFile){
+        insertEvent(new Event(arrivalFile.nextLine()));
+        System.out.println("Simulation Begins");
+        while(!isEmpty()){
+            Event newEvent = eventList[0];
+            currentTime = newEvent.getArrivalTime();
+            if(!newEvent.isDepart()){
+                people++;
+//                currentTime = newEvent.getArrivalTime();
+                System.out.println("Processing an arrival event at time: " +currentTime);
+                processArrival(newEvent, arrivalFile, eventList, bankQueue);
+            }
+            else {
+//                currentTime = newEvent.getDepartureTime();
+                processDeparture(newEvent, eventList, bankQueue);
             }
         }
-    //}
+        System.out.println("Simulation Ends.");
+        System.out.println("Number of people processed: " + (people));
+    }
 
-    public void processArrival(Event newEvent, Scanner anEvent, Event[] eventList, Queue<Integer> bankQueue) {
+    public void processArrival(Event newEvent, Scanner arrivalFile, Event[] eventList, Queue<Event> bankQueue) {
         boolean atFront = bankQueue.isEmpty();
-        bankQueue.add(newEvent.getArrivalTime());
+        bankQueue.add(newEvent);
         eventList[0] = null;
         
         if(atFront){
             insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
         }
+        if(arrivalFile.hasNextLine())
+            insertEvent(new Event(arrivalFile.nextLine()));
+        else {
+            if(eventList[1] != null)
+                eventList[0] = eventList[1];
+            eventList[1] = null;
+        }
         
-        if(anEvent.hasNextLine())
-            insertEvent(new Event(anEvent.nextLine()));
+                   
     }
 
-    public void processDeparture(Event newEvent, Event[] eventList, Queue<Integer> bankQueue) {
-        bankQueue.remove();
+    public void processDeparture(Event newEvent, Event[] eventList, Queue<Event> bankQueue) {
+//        System.out.println("Processing a departure event at time: " + (eventList[0].getDepartureTime()));
+        System.out.println("Processing a departure event at time: " + (eventList[0].getArrivalTime()));
         
+        bankQueue.remove();
         eventList[0] = null;
-        if(!bankQueue.isEmpty())
-            insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
+        
+        if(!bankQueue.isEmpty()){
+            currentTime += bankQueue.peek().getTransactionTime();
+            insertEvent(new Event(currentTime));
+        } else {
+            if(eventList[1] != null)
+                eventList[0] = eventList[1];
+            eventList[1] = null;
+        }
+    }
+    
+    public boolean isEmpty(){
+        return (eventList[0] == null && eventList[1] == null);
     }
     
     public void insertEvent(Event anEvent){
-        if(eventList.length == 0 || eventList[0] == null)
+        if(eventList[0] == null)
             eventList[0] = anEvent;
-        else {
+        else if(eventList[1] == null){
             eventList[1] = anEvent;
+        }
+        if(eventList[0] != null && eventList[1] != null){
             Arrays.sort(eventList);
 //            if(eventList[0].isDepart()){
-//                if(eventList[0].getDepartureTime() >= anEvent.getArrivalTime()){
-//                    Event tmp = eventList[0];
-//                    eventList[1] = eventList[0];
-//                    eventList[0] = anEvent;
-//                } else {
-//                    eventList[1] = anEvent;
-//                }
-//            } else {
-//                if(eventList[0].getArrivalTime() >= anEvent.getArrivalTime()){
-//                    Event tmp = eventList[0];
-//                    eventList[1] = eventList[0];
-//                    eventList[0] = anEvent;
-//                } else {
-//                    eventList[1] = anEvent;
-//                }
-//            }
+//                if(eventList[0].getDepartureTime() >= eventList[1].getArrivalTime())
+//                    swapEvent(0, 1);
+//            } else if(eventList[1].isDepart()){
+//                if(eventList[0].getArrivalTime() > eventList[1].getDepartureTime())
+//                    swapEvent(0, 1);
+//            } 
         }
     }
+    
+//    public void swapEvent(int a, int b){
+//        Event tmp = eventList[0];
+//        eventList[0] = eventList[1];
+//        eventList[1] = tmp;
+//    }
     
     public static void main(String[] args){
         BankQueuee bankQueuee = new BankQueuee();
@@ -111,19 +132,20 @@ public class BankQueuee {
 class Event implements Comparable{
     private int arrivalTime;
     private int transactionTime;
-    private int departureTime;
+//    private int departureTime;
     private boolean isDepart;
     
     public Event(String arrivalEvent){
         String[] times = arrivalEvent.split(" ");
         arrivalTime = Integer.parseInt(times[0]);
         transactionTime = Integer.parseInt(times[1]);
-        departureTime = 0;
+//        departureTime = 0;
         isDepart = false;
     }
     
     public Event(int departureTime){
-        this.departureTime = departureTime;
+        //this.departureTime = departureTime;
+        this.arrivalTime = departureTime;
         isDepart = true;
     }
     
@@ -131,9 +153,9 @@ class Event implements Comparable{
         return isDepart;
     }
     
-    public int getDepartureTime(){
-        return departureTime;
-    }
+//    public int getDepartureTime(){
+//        return departureTime;
+//    }
     
     public int getArrivalTime(){
         return arrivalTime;
@@ -146,9 +168,6 @@ class Event implements Comparable{
     @Override
     public int compareTo(Object obj) {
         Event otherEvent = (Event)obj;
-        if(this.isDepart)
-            return this.getDepartureTime() >= otherEvent.getArrivalTime() ? -1 : 0;
-        else
-            return this.getArrivalTime()>= otherEvent.getArrivalTime() ? -1 : 0;
+        return (this.getArrivalTime() - otherEvent.getArrivalTime());
     }
 }
