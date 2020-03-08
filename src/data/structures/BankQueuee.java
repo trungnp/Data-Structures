@@ -178,7 +178,6 @@ class Event implements Comparable{
         return (this.getArrivalTime() - otherEvent.getArrivalTime());
     }
     
-    @Override
     public String toString(){
         if(isDepart)
             return "Event departs at " + getArrivalTime();
