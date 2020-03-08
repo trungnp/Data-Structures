@@ -55,12 +55,12 @@ public class Bank3Queues {
             currentTime = newEvent.getArrivalTime();
             if(!newEvent.isDepart()){
                 people++;
-                System.out.println("Processing an arrival event at time: " +currentTime+ " at " +shortestQueue(queue1, queue2, queue3).getClass());
+                System.out.println("Processing an arrival event at time: " +currentTime);
                 processArrival(newEvent, arrivalFile, eventList, shortestQueue(queue1, queue2, queue3));
-                //ongestLine = Math.max(longestLine, bankQueue.size());
+                longestLine = Math.max(Math.max(queue1.size(), queue2.size()), queue3.size());
             }
             else {
-                System.out.println("Processing a departure event at time: " +currentTime+ " from " +departureQueue(queue1, queue2, queue3).getClass().getSimpleName());
+                System.out.println("Processing a departure event at time: " +currentTime);
                 processDeparture(newEvent, eventList, departureQueue(queue1, queue2, queue3));
             }
 //            printEventList(eventList);
@@ -86,7 +86,7 @@ public class Bank3Queues {
     }
 
     public void processDeparture(Event newEvent, ArrayList eventList, Queue<Event> bankQueue) {
-        System.out.println("Processing a departure event at time: " + (newEvent.getArrivalTime()));
+        //System.out.println("Processing a departure event at time: " + (newEvent.getArrivalTime()));
         
         bankQueue.remove();
         
@@ -127,7 +127,7 @@ public class Bank3Queues {
 //            return q2;
 //        else
 //            return q3;
-        return null;
+        return q1;
     }
     
     public Queue shortestQueue(Queue q1, Queue q2, Queue q3){
