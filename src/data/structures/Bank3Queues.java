@@ -15,7 +15,6 @@ import java.util.*;
  */
 public class Bank3Queues {
     private Queue<Event> queue1, queue2, queue3;
-    //private Event[] eventList;
     private ArrayList<Event> eventList;
     private int currentTime = 0;
     private int people = 0;
@@ -29,10 +28,6 @@ public class Bank3Queues {
         queue3 = new LinkedList<>();
         eventList = new ArrayList<>();
     }
-    
-//    public String getName(Queue<Event> e){
-//        
-//    }
     
     public Scanner readEventFile(String fileName){
         File eventFile = new File(fileName);
@@ -86,7 +81,6 @@ public class Bank3Queues {
     }
 
     public void processDeparture(Event newEvent, ArrayList eventList, Queue<Event> bankQueue) {
-        //System.out.println("Processing a departure event at time: " + (newEvent.getArrivalTime()));
         
         bankQueue.remove();
         
@@ -101,33 +95,33 @@ public class Bank3Queues {
     }
     
     public Queue departureQueue(Queue<Event> q1, Queue<Event> q2, Queue<Event> q3){
-//        int departureTime;
-//        if(!q1.isEmpty() || !q2.isEmpty() || !q3.isEmpty()){
-            if(!q1.isEmpty()){
-                if(q1.peek().getArrivalTime() + q1.peek().getTransactionTime() == currentTime)
-                    return q1;
-            }
-            if(!q2.isEmpty()){
-                if(q2.peek().getArrivalTime() + q2.peek().getTransactionTime() == currentTime)
-                    return q2;
-            }
-            if(!q3.isEmpty()){
-                if(q3.peek().getArrivalTime() + q3.peek().getTransactionTime() == currentTime)
-                    return q3;
-            } 
-//        } 
+        int departureTime = 0;
         
-        //return null;
-//            departureTime = Math.min(q2.peek().getArrivalTime(), q3.peek().getArrivalTime());
-//        departureTime = Math.min(Math.min(q1.peek().getArrivalTime(), q2.peek().getArrivalTime())
-//                , q3.peek().getArrivalTime());
-//        if(q1.peek().getArrivalTime() == departureTime)
-//            return q1;
-//        else if(q2.peek().getArrivalTime() == departureTime)
-//            return q2;
-//        else
-//            return q3;
-        return q1;
+        if(!q1.isEmpty() && !q2.isEmpty() && !q3.isEmpty())
+            departureTime = Math.min(Math.min(q1.peek().getArrivalTime(), q2.peek().getArrivalTime())
+                    , q3.peek().getArrivalTime());
+        else if(q1.isEmpty() && !q2.isEmpty() && !q3.isEmpty())
+            departureTime = Math.min(q2.peek().getArrivalTime()
+                    , q3.peek().getArrivalTime());
+        else if(!q1.isEmpty() && q2.isEmpty() && !q3.isEmpty())
+            departureTime = Math.min(q1.peek().getArrivalTime()
+                    , q3.peek().getArrivalTime());
+        else if(!q1.isEmpty() && !q2.isEmpty() && q3.isEmpty())
+            departureTime = Math.min(q1.peek().getArrivalTime()
+                    , q2.peek().getArrivalTime());
+        else if(!q1.isEmpty())
+            departureTime = q1.peek().getArrivalTime();
+        else if(!q2.isEmpty())
+            departureTime = q2.peek().getArrivalTime();
+        else
+            departureTime = q3.peek().getArrivalTime();
+        
+        if(!q1.isEmpty() && departureTime == q1.peek().getArrivalTime())
+            return q1;
+        else if(!q2.isEmpty() && departureTime == q2.peek().getArrivalTime())
+            return  q2;
+        else
+            return q3;
     }
     
     public Queue shortestQueue(Queue q1, Queue q2, Queue q3){
@@ -151,35 +145,11 @@ public class Bank3Queues {
                 System.out.println((++count) + "/ " +e);
             }
         }
-//        if(events.get(0) != null)
-//            System.out.println("[1] "+events.get(0));
-//        else
-//            System.out.println("empty");
-//        if(events[1] != null)
-//            System.out.println("[2] " +events[1]);
     }
-    
-//    public boolean isEmpty(){
-//        return (eventList[0] == null && eventList[1] == null);
-//    }
     
     public void insertEvent(Event anEvent){
         eventList.add(anEvent);
         Collections.sort(eventList);
-//        for(int i = 0; i < 2; i++){
-//            if(eventList.get(i) == null)
-//               eventList.add(anEvent);
-//        }
-//        if(eventList.size() == 2)
-//            Collections.sort(eventList);
-//        if(eventList. == null)
-//            eventList[0] = anEvent;
-//        else if(eventList[1] == null){
-//            eventList[1] = anEvent;
-//        }
-//        if(eventList[0] != null && eventList[1] != null){
-//            Arrays.sort(eventList);
-//        }
     }
     
     public static void main(String[] args){
