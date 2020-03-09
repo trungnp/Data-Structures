@@ -45,6 +45,7 @@ public class BankQueuee {
         eventList.add(new Event(arrivalFile.nextLine()));
         System.out.println("Simulation Begins");
         while(!eventList.isEmpty()){
+            Collections.sort(eventList);
             Event newEvent = eventList.get(0);
             currentTime = newEvent.getArrivalTime();
             if(!newEvent.isDepart()){
@@ -71,10 +72,12 @@ public class BankQueuee {
         eventList.remove(0);
         
         if(atFront){
-            insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
+            eventList.add(new Event(currentTime + newEvent.getTransactionTime()));
+//            insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
         }
         if(arrivalFile.hasNextLine())
-            insertEvent(new Event(arrivalFile.nextLine()));
+            eventList.add(new Event(arrivalFile.nextLine()));
+//            insertEvent(new Event(arrivalFile.nextLine()));
         
     }
 
@@ -89,7 +92,8 @@ public class BankQueuee {
             waitTime += newEvent.getArrivalTime() - bankQueue.peek().getArrivalTime();
             maximumWaitTime = Math.max(maximumWaitTime, newEvent.getArrivalTime() - bankQueue.peek().getArrivalTime());
             currentTime += bankQueue.peek().getTransactionTime();
-            insertEvent(new Event(currentTime));
+            eventList.add(new Event(currentTime));
+//            insertEvent(new Event(currentTime));
         } 
     }
     
@@ -106,10 +110,10 @@ public class BankQueuee {
         }
     }
     
-    public void insertEvent(Event anEvent){
-        eventList.add(anEvent);
-        Collections.sort(eventList);
-    }
+//    public void insertEvent(Event anEvent){
+//        eventList.add(anEvent);
+//        Collections.sort(eventList);
+//    }
     
     public static void main(String[] args){
         BankQueuee bankQueuee = new BankQueuee();
