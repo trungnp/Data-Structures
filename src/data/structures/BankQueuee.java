@@ -104,35 +104,11 @@ public class BankQueuee {
                 System.out.println((++count) + "/ " +e);
             }
         }
-//        if(events.get(0) != null)
-//            System.out.println("[1] "+events.get(0));
-//        else
-//            System.out.println("empty");
-//        if(events[1] != null)
-//            System.out.println("[2] " +events[1]);
     }
-    
-//    public boolean isEmpty(){
-//        return (eventList[0] == null && eventList[1] == null);
-//    }
     
     public void insertEvent(Event anEvent){
         eventList.add(anEvent);
         Collections.sort(eventList);
-//        for(int i = 0; i < 2; i++){
-//            if(eventList.get(i) == null)
-//               eventList.add(anEvent);
-//        }
-//        if(eventList.size() == 2)
-//            Collections.sort(eventList);
-//        if(eventList. == null)
-//            eventList[0] = anEvent;
-//        else if(eventList[1] == null){
-//            eventList[1] = anEvent;
-//        }
-//        if(eventList[0] != null && eventList[1] != null){
-//            Arrays.sort(eventList);
-//        }
     }
     
     public static void main(String[] args){
