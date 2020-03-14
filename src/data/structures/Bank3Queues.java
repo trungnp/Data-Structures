@@ -23,9 +23,9 @@ public class Bank3Queues {
     private int maximumWaitTime = 0;
     
     public Bank3Queues(){
-        queue1 = new LinkedList<>();
-        queue2 = new  LinkedList<>();
-        queue3 = new LinkedList<>();
+        queue1 = new java.util.LinkedList<>();
+        queue2 = new  java.util.LinkedList<>();
+        queue3 = new java.util.LinkedList<>();
         eventList = new ArrayList<>();
     }
     
@@ -42,7 +42,6 @@ public class Bank3Queues {
     }
     
     public void simulate(Scanner arrivalFile){
-//        insertEvent(new Event(arrivalFile.nextLine()));
         eventList.add(new Event(arrivalFile.nextLine()));
         System.out.println("Simulation Begins");
         while(!eventList.isEmpty()){
@@ -75,11 +74,9 @@ public class Bank3Queues {
         
         if(atFront){
             eventList.add(new Event(currentTime + newEvent.getTransactionTime()));
-//            insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
         }
         if(arrivalFile.hasNextLine())
             eventList.add(new Event(arrivalFile.nextLine()));
-//            insertEvent(new Event(arrivalFile.nextLine()));
         
     }
 
@@ -94,7 +91,6 @@ public class Bank3Queues {
             maximumWaitTime = Math.max(maximumWaitTime, newEvent.getArrivalTime() - bankQueue.peek().getArrivalTime());
             currentTime += bankQueue.peek().getTransactionTime();
             eventList.add(new Event(currentTime));
-//            insertEvent(new Event(currentTime));
         } 
     }
     
@@ -150,11 +146,6 @@ public class Bank3Queues {
             }
         }
     }
-    
-//    public void insertEvent(Event anEvent){
-//        eventList.add(anEvent);
-//        Collections.sort(eventList);
-//    }
     
     public static void main(String[] args){
         Bank3Queues bank3Queues = new Bank3Queues();
