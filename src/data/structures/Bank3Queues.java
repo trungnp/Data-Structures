@@ -23,9 +23,9 @@ public class Bank3Queues {
     private int maximumWaitTime = 0;
     
     public Bank3Queues(){
-        queue1 = new LinkedList<>();
-        queue2 = new  LinkedList<>();
-        queue3 = new LinkedList<>();
+        queue1 = new java.util.LinkedList<>();
+        queue2 = new  java.util.LinkedList<>();
+        queue3 = new java.util.LinkedList<>();
         eventList = new ArrayList<>();
     }
     
@@ -42,10 +42,10 @@ public class Bank3Queues {
     }
     
     public void simulate(Scanner arrivalFile){
-//        insertEvent(new Event(arrivalFile.nextLine()));
         eventList.add(new Event(arrivalFile.nextLine()));
         System.out.println("Simulation Begins");
         while(!eventList.isEmpty()){
+            Collections.sort(eventList);
             Event newEvent = eventList.get(0);
             currentTime = newEvent.getArrivalTime();
             if(!newEvent.isDepart()){
@@ -73,10 +73,10 @@ public class Bank3Queues {
         eventList.remove(0);
         
         if(atFront){
-            insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
+            eventList.add(new Event(currentTime + newEvent.getTransactionTime()));
         }
         if(arrivalFile.hasNextLine())
-            insertEvent(new Event(arrivalFile.nextLine()));
+            eventList.add(new Event(arrivalFile.nextLine()));
         
     }
 
@@ -90,7 +90,7 @@ public class Bank3Queues {
             waitTime += newEvent.getArrivalTime() - bankQueue.peek().getArrivalTime();
             maximumWaitTime = Math.max(maximumWaitTime, newEvent.getArrivalTime() - bankQueue.peek().getArrivalTime());
             currentTime += bankQueue.peek().getTransactionTime();
-            insertEvent(new Event(currentTime));
+            eventList.add(new Event(currentTime));
         } 
     }
     
@@ -147,14 +147,9 @@ public class Bank3Queues {
         }
     }
     
-    public void insertEvent(Event anEvent){
-        eventList.add(anEvent);
-        Collections.sort(eventList);
-    }
-    
     public static void main(String[] args){
         Bank3Queues bank3Queues = new Bank3Queues();
-        Scanner s = bank3Queues.readEventFile("/Users/trungnp/NetBeansProjects/Data Structures/src/data/structures/arrivalEvents");
+        Scanner s = bank3Queues.readEventFile("/Users/trungnp/NetBeansProjects/Data-Structures/src/data/structures/arrivalEvents");
         bank3Queues.simulate(s);
     }
     

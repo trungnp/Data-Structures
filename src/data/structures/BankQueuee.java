@@ -15,7 +15,6 @@ import java.util.*;
  */
 public class BankQueuee {
     private Queue<Event> bankQueue;
-    //private Event[] eventList;
     private ArrayList<Event> eventList;
     private int currentTime = 0;
     private int people = 0;
@@ -24,7 +23,7 @@ public class BankQueuee {
     private int maximumWaitTime = 0;
     
     public BankQueuee(){
-        bankQueue = new LinkedList<>();
+        bankQueue = new java.util.LinkedList<>();
         eventList = new ArrayList<>();
     }
     
@@ -41,10 +40,10 @@ public class BankQueuee {
     }
     
     public void simulate(Scanner arrivalFile){
-//        insertEvent(new Event(arrivalFile.nextLine()));
         eventList.add(new Event(arrivalFile.nextLine()));
         System.out.println("Simulation Begins");
         while(!eventList.isEmpty()){
+            Collections.sort(eventList);
             Event newEvent = eventList.get(0);
             currentTime = newEvent.getArrivalTime();
             if(!newEvent.isDepart()){
@@ -71,10 +70,10 @@ public class BankQueuee {
         eventList.remove(0);
         
         if(atFront){
-            insertEvent(new Event(currentTime + newEvent.getTransactionTime()));
+            eventList.add(new Event(currentTime + newEvent.getTransactionTime()));
         }
         if(arrivalFile.hasNextLine())
-            insertEvent(new Event(arrivalFile.nextLine()));
+            eventList.add(new Event(arrivalFile.nextLine()));
         
     }
 
@@ -89,7 +88,7 @@ public class BankQueuee {
             waitTime += newEvent.getArrivalTime() - bankQueue.peek().getArrivalTime();
             maximumWaitTime = Math.max(maximumWaitTime, newEvent.getArrivalTime() - bankQueue.peek().getArrivalTime());
             currentTime += bankQueue.peek().getTransactionTime();
-            insertEvent(new Event(currentTime));
+            eventList.add(new Event(currentTime));
         } 
     }
     
@@ -104,36 +103,8 @@ public class BankQueuee {
                 System.out.println((++count) + "/ " +e);
             }
         }
-//        if(events.get(0) != null)
-//            System.out.println("[1] "+events.get(0));
-//        else
-//            System.out.println("empty");
-//        if(events[1] != null)
-//            System.out.println("[2] " +events[1]);
     }
     
-//    public boolean isEmpty(){
-//        return (eventList[0] == null && eventList[1] == null);
-//    }
-    
-    public void insertEvent(Event anEvent){
-        eventList.add(anEvent);
-        Collections.sort(eventList);
-//        for(int i = 0; i < 2; i++){
-//            if(eventList.get(i) == null)
-//               eventList.add(anEvent);
-//        }
-//        if(eventList.size() == 2)
-//            Collections.sort(eventList);
-//        if(eventList. == null)
-//            eventList[0] = anEvent;
-//        else if(eventList[1] == null){
-//            eventList[1] = anEvent;
-//        }
-//        if(eventList[0] != null && eventList[1] != null){
-//            Arrays.sort(eventList);
-//        }
-    }
     
     public static void main(String[] args){
         BankQueuee bankQueuee = new BankQueuee();
