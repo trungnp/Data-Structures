@@ -108,7 +108,7 @@ public class BankQueuee {
     
     public static void main(String[] args){
         BankQueuee bankQueuee = new BankQueuee();
-        Scanner s = bankQueuee.readEventFile("/Users/trungnp/NetBeansProjects/Data-Structures/src/data/structures/arrivalEvents");
+        Scanner s = bankQueuee.readEventFile("/Users/trungnp/NetBeansProjects/Data Structures/src/data/structures/arrivalEvents");
         bankQueuee.simulate(s);
     }
     
