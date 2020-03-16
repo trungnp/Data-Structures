@@ -149,7 +149,11 @@ public class SortedCustomerLinkedList {
             String a = input.nextLine();
             myList.insert(new Customer(a));
         }
-        myList.displayList();
+//        myList.displayList();
+        
+        CustomerIterator i = myList.getIterator();
+        while(i.hasNext())
+            System.out.println(i.next().toString());
     }
 }
 
