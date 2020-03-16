@@ -5,6 +5,7 @@
  */
 package data.structures;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -38,13 +39,36 @@ public class SortedCustomerLinkedList {
     
     public Customer findCustomer(Customer newCustomer){
         Customer current = firstCustomer;
-        while(current != null && current.getName().compareToIgnoreCase(newCustomer.getName()) < 0){
+        while(current != null && current.getName().compareToIgnoreCase(newCustomer.getName()) <= 0){
             current = current.next;
         }
         
         if(current == null)
             throw new NoSuchElementException();
         return current;
+    }
+    
+    public void insert(Customer newCustomer){
+        if(isEmpty())
+            insertFirst(newCustomer);
+        else {
+            Customer current = firstCustomer;
+            while(current != null){
+                int a = current.getName().compareTo(newCustomer.getName());
+                if(a <= 0)
+                    current = current.next;
+                else
+                    break;
+            }
+            if(current == null)
+                insertLast(newCustomer);
+            else {
+                newCustomer.next = current;
+                newCustomer.previous = current.previous;
+                current.previous = newCustomer;
+                current.previous.next = newCustomer;
+            }
+        }
     }
     
     public void insertFirst(Customer newCustomer){
@@ -120,37 +144,23 @@ public class SortedCustomerLinkedList {
     }
     
     public static void main(String[] args){
-        DoublyLinkedList dblLinkedList = new DoublyLinkedList();
-        dblLinkedList.insertFirst("a");
-        dblLinkedList.insertFirst("b");
-        dblLinkedList.insertFirst("c");
-        dblLinkedList.insertFirst("d");
-        dblLinkedList.insertLast("z");
-        dblLinkedList.insertLast("y");
-        dblLinkedList.insertLast("x");
-        dblLinkedList.insertLast("t");
-//        dblLinkedList.displayList();
-        dblLinkedList.deleteFirst();
-        dblLinkedList.deleteLast();
-//        dblLinkedList.displayBackward();
+        SortedCustomerLinkedList myList = new SortedCustomerLinkedList();
+        myList.insert(new Customer("a", "123", 1));
+        //myList.displayList();
+        myList.insert(new Customer("d", "1234", 2));
+//        myList.displayList();
+        myList.insert(new Customer("e", "1235", 2));
+//        myList.displayList();
+        myList.insert(new Customer("zz", "1236", 1));
+//        myList.displayList();
+        myList.insert(new Customer("g", "1237", 1));
+        myList.displayList();
+        myList.insert(new Customer("r", "1238", 1));
+        //myList.displayList();
+        myList.insert(new Customer("d", "1239", 1));
+        //myList.displayList();
         
-        dblLinkedList.insertFirst(1);
-        dblLinkedList.insertFirst(2);
-        dblLinkedList.insertFirst(3);
-        dblLinkedList.insertFirst(4);
-        dblLinkedList.insertLast(5);
-        dblLinkedList.insertLast(6);
-        dblLinkedList.insertLast(7);
-        dblLinkedList.insertLast(8);
-//        dblLinkedList.displayList();
-        
-        dblLinkedList.insertAfter(5, 100);
-        dblLinkedList.insertAfter(100, 9999);
-        dblLinkedList.insertAfter(9999, 2222);
-        dblLinkedList.insertBefore(2222, "asjdh");
-        dblLinkedList.insertBefore(5, "qiueyeur");
-//        dblLinkedList.displayList();
-        
+    
 //        MyIterator i = dblLinkedList.getIterator();
 //        while (i.hasNext()){
 //           System.out.print(i.next() + " ");
@@ -164,7 +174,7 @@ public class SortedCustomerLinkedList {
     }
 }
 
-class CustomerIterator<Customer> implements Iterator<Customer>{
+class CustomerIterator implements Iterator{
     private SortedCustomerLinkedList theList;
     private Customer current, previous;
     private boolean isAfterNext;
@@ -178,19 +188,46 @@ class CustomerIterator<Customer> implements Iterator<Customer>{
     @Override
     public boolean hasNext() {
         if(current == null)
-            return !theList.getFirstCustomer();
+            return !theList.isEmpty();
         else
-            
+            return current.next != null;
     }
 
     @Override
     public Customer next() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(!hasNext())
+            throw new NoSuchElementException();
+        else {
+            isAfterNext = true;
+            previous = current;
+            if(current == null)
+                current = theList.getFirstCustomer();
+            else
+                current = current.next;
+        }
+        return current;
     }
 
     @Override
     public void remove() {
-        Iterator.super.remove(); //To change body of generated methods, choose Tools | Templates.
+        if(!isAfterNext)
+            throw new IllegalStateException();
+        if(current == theList.getFirstCustomer())
+            theList.deleteFirst();
+        else if(current == theList.getLastCustomer())
+            theList.deleteLast();
+        else {
+            previous.next = current.next;
+            current.next.previous = current.previous;
+        }
+        current = previous;
+        isAfterNext = false;
+    }
+    
+    public Customer getCurrent(){
+        if(theList.isEmpty())
+            throw new NoSuchElementException();
+        return current;
     }
     
 }
@@ -225,6 +262,6 @@ class Customer implements Comparable<Customer>{
 
     @Override
     public int compareTo(Customer other) {
-        return this.name.compareToIgnoreCase(other.getName());
+        return this.name.compareTo(other.getName());
     }
 }
