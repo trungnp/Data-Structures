@@ -5,9 +5,12 @@
  */
 package data.structures;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  *
@@ -49,24 +52,30 @@ public class SortedCustomerLinkedList {
     }
     
     public void insert(Customer newCustomer){
-        if(isEmpty())
+        Customer current = firstCustomer;
+        Customer previousCustomer = firstCustomer;
+        if(isEmpty()){
             insertFirst(newCustomer);
+        }
         else {
-            Customer current = firstCustomer;
-            while(current != null){
-                int a = current.getName().compareTo(newCustomer.getName());
-                if(a <= 0)
-                    current = current.next;
-                else
-                    break;
+            while(current != null && current.getName().compareTo(newCustomer.getName()) < 0){
+                previousCustomer = current;
+                current = current.next;
             }
             if(current == null)
                 insertLast(newCustomer);
             else {
-                newCustomer.next = current;
-                newCustomer.previous = current.previous;
+                if(current.previous == null){
+                    newCustomer.previous = current.previous;
+                    newCustomer.next = current;
+                    current.previous = newCustomer;
+                    firstCustomer = newCustomer;
+                } else {
+                newCustomer.next = previousCustomer.next;
+                newCustomer.previous = previousCustomer;
+                previousCustomer.next = newCustomer;
                 current.previous = newCustomer;
-                current.previous.next = newCustomer;
+                }
             }
         }
     }
@@ -87,26 +96,6 @@ public class SortedCustomerLinkedList {
             lastCustomer.next = newCustomer;
         newCustomer.previous = lastCustomer;
         lastCustomer = newCustomer;
-    }
-    
-    public void insertAfter(Customer find, Customer newCustomer){
-        Customer current = findCustomer(find);
-        if(current != null){
-            newCustomer.next = current.next;
-            newCustomer.previous = current;
-            current.next = newCustomer;
-            current.next.previous = newCustomer;
-        }
-    }
-    
-    public void insertBefore(Customer find, Customer newCustomer){
-        Customer current = findCustomer(find);
-        if(current != null){
-            newCustomer.next = current;
-            newCustomer.previous = current.previous;
-            current.previous = newCustomer;
-            current.previous.next = newCustomer;
-        }
     }
     
     public Customer deleteFirst(){
@@ -137,7 +126,16 @@ public class SortedCustomerLinkedList {
         }
     }
     
-    
+    public static Scanner readFile(String fileName){
+        File customerFile = new File(fileName);
+        try {
+            Scanner s = new Scanner(customerFile);
+            return s;
+        } catch (FileNotFoundException ex){
+            System.out.println("File not found.");
+        }
+        return null;
+    }
     
     public CustomerIterator getIterator(){
         return new CustomerIterator(this);
@@ -145,32 +143,13 @@ public class SortedCustomerLinkedList {
     
     public static void main(String[] args){
         SortedCustomerLinkedList myList = new SortedCustomerLinkedList();
-        myList.insert(new Customer("a", "123", 1));
-        //myList.displayList();
-        myList.insert(new Customer("d", "1234", 2));
-//        myList.displayList();
-        myList.insert(new Customer("e", "1235", 2));
-//        myList.displayList();
-        myList.insert(new Customer("zz", "1236", 1));
-//        myList.displayList();
-        myList.insert(new Customer("g", "1237", 1));
+        Scanner input = readFile("/Users/trungnp/NetBeansProjects/Data-Structures/src/data/structures/customer");
+        
+        while(input.hasNextLine()){
+            String a = input.nextLine();
+            myList.insert(new Customer(a));
+        }
         myList.displayList();
-        myList.insert(new Customer("r", "1238", 1));
-        //myList.displayList();
-        myList.insert(new Customer("d", "1239", 1));
-        //myList.displayList();
-        
-    
-//        MyIterator i = dblLinkedList.getIterator();
-//        while (i.hasNext()){
-//           System.out.print(i.next() + " ");
-//        }
-//        System.out.println();
-//        System.out.println(i.getCurrent());
-//        i.remove();
-//        dblLinkedList.displayList();
-//        dblLinkedList.displayBackward();
-        
     }
 }
 
@@ -232,16 +211,17 @@ class CustomerIterator implements Iterator{
     
 }
 
-class Customer implements Comparable<Customer>{
+class Customer{
     private String name;
     private String phoneNumber;
     private double salary;
     Customer next, previous;
     
-    public Customer(String name, String phoneNumber, double salary){
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.salary = salary;
+    public Customer(String infoString){
+        String[] info = infoString.split(" ");
+        this.name = info[0];
+        this.phoneNumber = info[1];
+        this.salary = Integer.parseInt(info[2]);
     }
     
     public String getName(){
@@ -260,8 +240,8 @@ class Customer implements Comparable<Customer>{
         return "Name: " +name+ " || Phone: " +phoneNumber+ " || Salary: " +salary;
     }
 
-    @Override
-    public int compareTo(Customer other) {
-        return this.name.compareTo(other.getName());
-    }
+//    @Override
+//    public int compareTo(Customer other) {
+//        return this.name.compareTo(other.getName());
+//    }
 }
